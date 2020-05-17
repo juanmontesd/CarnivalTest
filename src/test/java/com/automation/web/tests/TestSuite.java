@@ -10,7 +10,7 @@ import org.testng.annotations.Test;
 public class TestSuite extends BaseTest {
 
    @Test
-    public void testCaseSearch(String country) {
+    public void testCaseSearch() {
         log.info("Get Home Page");
         HomePage homePage = getHomePage();
     }
