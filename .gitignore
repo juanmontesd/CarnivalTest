@@ -1,0 +1,14 @@
+/target/
+/.classpath
+/.project
+/.settings
+/test-output/
+/.idea/
+.idea
+*.iws
+*.iml
+*.ipr
+.DS_Store
+/src/.DS_Store
+/src/main/.DS_Store
+/bin

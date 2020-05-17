@@ -1,0 +1,16 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="test suite" verbose="1">
+	<listeners>
+		<listener class-name="com.automation.web.listeners.Listener"/>
+	</listeners>
+
+	<parameter name="browser" value="firefox"/>
+	<parameter name="url" value="https://www.carnival.com/"/>
+
+	<test name="run test">
+		<classes>
+			<class name="com.automation.web.tests.TestSuite"/>
+		</classes>
+	</test>
+</suite>
