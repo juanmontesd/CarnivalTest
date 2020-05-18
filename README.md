@@ -5,6 +5,7 @@ INSTALLATION INSTRUCTIONS:
 2. mvn clean install -DskipTests
 3. mvn eclipse:eclipse or mvn idea:idea
 4. open proyect with you IDE
+    - In eclipse [install TestNG plugin](https://www.guru99.com/install-testng-in-eclipse.html)
 
 HOW TO RUN:
 1. Fist have to update the drivers for your specific OS in the file 
