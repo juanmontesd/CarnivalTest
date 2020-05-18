@@ -60,7 +60,7 @@ public class HomePage extends BasePage {
         click(destinationButton);
         waitElementsVisibility(filterOptions);
         Optional<WebElement> filterOption = filterOptions.stream()
-                .filter(option -> destination.equals(option.getText())).findFirst();
+                .filter(option -> destination.equals(getText(option))).findFirst();
         filterOption.ifPresent(this::click);
         return this;
     }
@@ -75,7 +75,7 @@ public class HomePage extends BasePage {
         click(durationButton);
         waitElementsVisibility(filterOptions);
         Optional<WebElement> filterOption = filterOptions.stream()
-                .filter(option -> duration.equals(option.getText())).findFirst();
+                .filter(option -> duration.equals(getText(option))).findFirst();
         filterOption.ifPresent(this::click);
         return this;
     }

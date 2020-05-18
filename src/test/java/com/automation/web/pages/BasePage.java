@@ -34,7 +34,7 @@ public class BasePage {
 	 * Get the web driver wait.
 	 * @return {@link WebDriverWait}
 	 */
-	public WebDriverWait getWait() {
+	protected WebDriverWait getWait() {
 		return wait;
 	}
 
@@ -59,7 +59,7 @@ public class BasePage {
 	 * Wait element to be visible.
 	 * @param element WebElement
 	 */
-	public void waitElementVisibility(WebElement element) {
+	protected void waitElementVisibility(WebElement element) {
 		getWait().until(ExpectedConditions.visibilityOf(element));
 	}
 
@@ -67,7 +67,7 @@ public class BasePage {
 	 * Wait for the element by clickable.
 	 * @param element WebElement
 	 */
-	public void waitToBeClickable(WebElement element) {
+	protected void waitToBeClickable(WebElement element) {
 		getWait().until(ExpectedConditions.elementToBeClickable(element));
 	}
 
@@ -75,12 +75,12 @@ public class BasePage {
 	 * Wait and click on the element.
 	 * @param element WebElement
 	 */
-	public void click(WebElement element) {
+	protected void click(WebElement element) {
 		waitToBeClickable(element);
 		element.click();
 	}
 
-	public void tap(WebElement element) {
+	protected void tap(WebElement element) {
 		Actions action = new Actions(getDriver());
 		action.moveToElement(element).click().build().perform();
 	}
@@ -89,8 +89,49 @@ public class BasePage {
 	 * Wait element to be visible.
 	 * @param elements list WebElement
 	 */
-	public void waitElementsVisibility(List<WebElement> elements) {
+	protected void waitElementsVisibility(List<WebElement> elements) {
 		getWait().until(ExpectedConditions.visibilityOfAllElements(elements));
+	}
+
+	/**
+	 * Wait to refresh and visible of a element.
+	 * @param elements List WebElement
+	 */
+	public void waitVisibilityRefreshed(List<WebElement> elements) {
+		getWait().until(ExpectedConditions.refreshed(ExpectedConditions.visibilityOfAllElements(elements)));
+	}
+
+	/**
+	 * Change slide bar value.
+	 * @param element WebElement
+	 * @param xOffset int x offset
+	 * @param yOffset int y offset
+	 */
+	protected void changeSlideBarValue(WebElement element, int xOffset, int yOffset) {
+		waitElementVisibility(element);
+		Actions action = new Actions(getDriver());
+		action.dragAndDropBy(element, xOffset, yOffset).build().perform();
+	}
+
+	/**
+	 * Get attribute value of an element.
+	 * @param element WebElement
+	 * @param attribute string attribute
+	 * @return string value
+	 */
+	protected String getAttribute(WebElement element, String attribute) {
+		waitElementVisibility(element);
+		return element.getAttribute(attribute);
+	}
+
+	/**
+	 * Wait and get text.
+	 * @param element WebElement
+	 * @return string text
+	 */
+	protected String getText(WebElement element) {
+		waitElementVisibility(element);
+		return element.getText();
 	}
 	
 }

@@ -33,6 +33,24 @@ public class SearchPage extends BasePage {
     @FindBy(className = "vrgf-learn-more__text")
     private List<WebElement> cruisesLearnMoreButton;
 
+    @FindBy(className = "sfn-nav__filter-title")
+    private WebElement filterMenuTitle;
+
+    @FindBy(id = "sfn-nav-pricing")
+    private WebElement filterPricingButton;
+
+    @FindBy(className = "rzslider")
+    private WebElement sliderBar;
+
+    @FindBy(className = "rz-pointer-min")
+    private WebElement minPrice;
+
+    @FindBy(className = "rz-pointer-max")
+    private WebElement maxPrice;
+
+    @FindBy(className = "sfp-reset__button")
+    private WebElement resetPricingFilter;
+
     /**
      * Constructor.
      * @param driver WebDriver
@@ -106,14 +124,14 @@ public class SearchPage extends BasePage {
             log.info("Validate duration range: " + min + " - " + max + " Days");
             waitElementsVisibility(cruisesDuration);
             return cruisesDuration.stream().allMatch(cruiseDuration ->
-                    min <= Integer.parseInt(cruiseDuration.getText()) &&
-                    max >= Integer.parseInt(cruiseDuration.getText()));
+                    min <= Integer.parseInt(getText(cruiseDuration)) &&
+                    max >= Integer.parseInt(getText(cruiseDuration)));
         } else {
             int min = Integer.parseInt(duration.split("\"ROM")[0]);
             log.info("Validate duration range: " + min + "+ Days");
             waitElementsVisibility(cruisesDuration);
             return cruisesDuration.stream().allMatch(cruiseDuration ->
-                    min <= Integer.parseInt(cruiseDuration.getText()));
+                    min <= Integer.parseInt(getText(cruiseDuration)));
         }
     }
 
@@ -124,7 +142,7 @@ public class SearchPage extends BasePage {
      */
     public boolean verifyDestination(String destination) {
         waitElementsVisibility(cruisesTitle);
-        return cruisesTitle.stream().allMatch(cruiseTitle -> cruiseTitle.getText().contains(destination.toUpperCase()));
+        return cruisesTitle.stream().allMatch(cruiseTitle -> getText(cruiseTitle).contains(destination.toUpperCase()));
     }
 
     /**
@@ -137,12 +155,96 @@ public class SearchPage extends BasePage {
         else log.info("Validate order Expensive to Cheapest");
         waitElementsVisibility(cruisesPrice);
         for (int i = 0; i < cruisesPrice.size() - 1; i++) {
-            if((flag && Integer.parseInt(cruisesPrice.get(i).getText())
-                    > Integer.parseInt(cruisesPrice.get(i + 1).getText()))
-                    || (!flag && Integer.parseInt(cruisesPrice.get(i).getText())
-                    > Integer.parseInt(cruisesPrice.get(i + 1).getText()))) return false;
+            if((flag && Integer.parseInt(getText(cruisesPrice.get(i)))
+                    > Integer.parseInt(getText(cruisesPrice.get(i + 1))))
+                    || (!flag && Integer.parseInt(getText(cruisesPrice.get(i)))
+                    > Integer.parseInt(getText(cruisesPrice.get(i + 1))))) return false;
         }
         return true;
+    }
+
+    /**
+     * Validate filter menu is displayed;
+     * @return true if the menu is displayed
+     */
+    public boolean filterMenuIsDisplayed() {
+        log.info("Validate filter menu is displayed");
+        waitElementVisibility(resultsContainer);
+        return filterMenuTitle.isDisplayed() && getText(filterMenuTitle).equals("Filter By:");
+    }
+
+    /**
+     * Validate filter pricing option is displayed;
+     * @return true if is displayed
+     */
+    public boolean filterPricingIsDisplayed() {
+        log.info("Filter pricing is displayed");
+        waitElementVisibility(resultsContainer);
+        return filterPricingButton.isDisplayed();
+    }
+
+    /**
+     * Click in filter pricing option
+     */
+    public void clickPricingFilter() {
+        log.info("Click pricing filter option");
+        click(filterPricingButton);
+    }
+
+    /**
+     * Validate pricing slide bar is displayed.
+     * @return true if is displayed
+     */
+    public boolean pricingSlideBarIsDisplayed() {
+        log.info("Slide var is displayed");
+        waitElementVisibility(sliderBar);
+        return minPrice.isDisplayed() && maxPrice.isDisplayed() && sliderBar.isDisplayed();
+    }
+
+    /**
+     * Change minimum price filter value.
+     * @param addValue int increase value more than 10
+     */
+    public void changeMinValue(int addValue) {
+        log.info("Change minimum price");
+        int newPrice = Integer.parseInt(getAttribute(minPrice, "aria-valuenow")) + addValue;
+        while (Integer.parseInt(getAttribute(minPrice, "aria-valuenow")) < newPrice) {
+            changeSlideBarValue(minPrice, 20, minPrice.getLocation().y);
+        }
+    }
+
+    /**
+     * Change maximum price filter value.
+     * @param minusValue int decrease value more than 10
+     */
+    public void changeMaxValue(int minusValue) {
+        log.info("Change maximum price");
+        int newPrice = Integer.parseInt(getAttribute(maxPrice, "aria-valuenow")) - minusValue;
+        while (Integer.parseInt(getAttribute(maxPrice, "aria-valuenow")) > newPrice) {
+            changeSlideBarValue(maxPrice, -20, minPrice.getLocation().y);
+        }
+    }
+
+    /**
+     * Click on reset pricing filter.
+     */
+    public void clickResetPriceFilter() {
+        log.info("Click reset pricing filter");
+        click(resetPricingFilter);
+    }
+
+    /**
+     * Verify that the cruises options being in to the range of the filter.
+     * @return true if price are in the range.
+     */
+    public boolean verifyPriceRange() {
+        waitVisibilityRefreshed(cruisesInfo);
+        int min = Integer.parseInt(getAttribute(minPrice, "aria-valuenow"));
+        int max = Integer.parseInt(getAttribute(maxPrice, "aria-valuenow"));
+        log.info("Verify price range: " + min + " - " + max);
+        waitElementsVisibility(cruisesPrice);
+        return cruisesPrice.stream().allMatch(price -> Integer.parseInt(getText(price)) >= min
+                && Integer.parseInt(getText(price)) <= max);
     }
 
 }
