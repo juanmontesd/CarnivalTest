@@ -328,4 +328,16 @@ public class SearchPage extends BasePage {
         value.ifPresent(this::click);
     }
 
+    /**
+     * Select first cruise.
+     * @return {@link ItineraryPage}
+     */
+    public ItineraryPage selectFirstCruise() {
+        log.info("Select first cruise");
+        waitElementVisibility(resultsContainer);
+        waitElementsVisibility(cruisesLearnMoreButton);
+        click(cruisesLearnMoreButton.get(0));
+        return new ItineraryPage(getDriver());
+    }
+
 }
