@@ -4,7 +4,9 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Class for interact with the search page.
@@ -50,6 +52,18 @@ public class SearchPage extends BasePage {
 
     @FindBy(className = "sfp-reset__button")
     private WebElement resetPricingFilter;
+
+    @FindBy(className = "sfn-nav__sort-title")
+    private WebElement sortMenuTitle;
+
+    @FindBy(id = "sfn-nav-sort-pricing")
+    private WebElement sortPricingButton;
+
+    @FindBy(className = "sfn-nav__sort-pricing-options")
+    private List<WebElement> sortPricingOptions;
+
+    @FindBy(className = "sbsc-container__reset-selections")
+    private WebElement resetSearch;
 
     /**
      * Constructor.
@@ -242,9 +256,76 @@ public class SearchPage extends BasePage {
         int min = Integer.parseInt(getAttribute(minPrice, "aria-valuenow"));
         int max = Integer.parseInt(getAttribute(maxPrice, "aria-valuenow"));
         log.info("Verify price range: " + min + " - " + max);
+        waitElementVisibility(resetSearch);
         waitElementsVisibility(cruisesPrice);
         return cruisesPrice.stream().allMatch(price -> Integer.parseInt(getText(price)) >= min
                 && Integer.parseInt(getText(price)) <= max);
+    }
+
+    /**
+     * Validate sort menu is displayed;
+     * @return true if the menu is displayed
+     */
+    public boolean sortMenuIsDisplayed() {
+        log.info("Validate sort menu is displayed");
+        waitElementVisibility(resultsContainer);
+        return sortMenuTitle.isDisplayed() && getText(sortMenuTitle).equals("Sort By:");
+    }
+
+    /**
+     * Validate sort pricing option is displayed;
+     * @return true if is displayed
+     */
+    public boolean sortPricingIsDisplayed() {
+        log.info("sort pricing is displayed");
+        waitElementVisibility(resultsContainer);
+        return sortPricingButton.isDisplayed();
+    }
+
+    /**
+     * Click in sort pricing option
+     */
+    public void clickPricingSort() {
+        log.info("Click pricing sort option");
+        click(sortPricingButton);
+    }
+
+    /**
+     * Validate order option is selected.
+     * @param option string sort option
+     * @return true if is selected
+     */
+    public boolean sortPricingOptionIsSelected(String option) {
+        log.info("Validate sort price selected option");
+        waitElementsVisibility(sortPricingOptions);
+        Optional<WebElement> value = sortPricingOptions.stream()
+                .filter(sortOption -> getText(sortOption).equals(option)).findFirst();
+        return value.map(WebElement::isSelected).orElse(false);
+    }
+
+    /**
+     * Verify sort options.
+     * @param options List of sort options
+     * @return true if the options are the expected
+     */
+    public boolean verifySortPricingOptions(List<String> options) {
+        log.info("Verify sort price options");
+        waitElementsVisibility(sortPricingOptions);
+        List<String> sortOptions = new ArrayList<>();
+        sortPricingOptions.forEach(option -> sortOptions.add(getText(option)));
+        return sortOptions.stream().sorted().equals(options.stream().sorted());
+    }
+
+    /**
+     * Select order pricing option.
+     * @param option string sort option
+     */
+    public void selectSortPricingOption(String option) {
+        log.info("Select sort price option");
+        waitElementsVisibility(sortPricingOptions);
+        Optional<WebElement> value = sortPricingOptions.stream()
+                .filter(sortOption -> getText(sortOption).equals(option)).findFirst();
+        value.ifPresent(this::click);
     }
 
 }
