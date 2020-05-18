@@ -15,8 +15,8 @@ public class BaseTest {
 	
 	Driver driver;
 	
-	private HomePage Home;
-	public Logger log = Logger.getLogger(BaseTest.class);
+	private HomePage home;
+	protected Logger log = Logger.getLogger(BaseTest.class);
 	
 	
 	@BeforeTest(alwaysRun=true)
@@ -24,12 +24,13 @@ public class BaseTest {
 	public void beforeTest(String browser, String url) {
 		driver = new Driver(browser);
 		driver.getDriver().manage().window().maximize();
-		Home= new HomePage(driver.getDriver(), url);
+		home= new HomePage(driver.getDriver(), url);
+		home.closeSingUpPopUp();
 	}
 
 	@AfterTest(alwaysRun=true)
 	public void afterTest() {
-		Home.dispose();
+		home.dispose();
 	}
 	
 	/**
@@ -37,7 +38,7 @@ public class BaseTest {
 	 * @return {@link HomePage}
 	 */
 	public HomePage getHomePage() {
-		return Home;
+		return home;
 	}
 
 }
