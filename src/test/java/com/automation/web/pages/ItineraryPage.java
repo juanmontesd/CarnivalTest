@@ -65,6 +65,7 @@ public class ItineraryPage extends BasePage {
      */
     public boolean bookButtonIsDisplayed() {
         waitElementVisibility(sectionItinerary);
+        waitElementsVisibility(daysContainer);
         return bookButton.isDisplayed();
     }
 
