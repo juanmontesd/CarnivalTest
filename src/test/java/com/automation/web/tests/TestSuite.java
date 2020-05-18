@@ -43,6 +43,60 @@ public class TestSuite extends BaseTest {
         Assert.assertTrue(searchPage.verifyOrderByPricing(true), "NOT ORDER FROM CHEAPEST TO EXPENSIVE");
     }
 
+    @Test(description = "TC-002 Filter the result of the search by pricing",
+            dataProviderClass = Data.class,
+            dataProvider = "searchOptions")
+    public void testFilterSearchResult(Options options) {
+        log.info("Precondition previous search for the cruises");
+        SearchPage searchPage = getHomePage().setDestination(options.getDestination())
+                .setDuration(options.getDuration())
+                .searchCruises();
+        log.info("Verify filter menu");
+        Assert.assertTrue(searchPage.filterMenuIsDisplayed(), "FILTER MENU NOT DISPLAYED");
+        Assert.assertTrue(searchPage.filterPricingIsDisplayed(), "FILTER PRICE BUTTON NIT DISPLAYED");
+        log.info("Open filter pricing options");
+        searchPage.clickPricingFilter();
+        Assert.assertTrue(searchPage.pricingSlideBarIsDisplayed(), "SLIDE BAR NOT DISPLAYED");
+        log.info("Decrease maximum value");
+        searchPage.changeMaxValue(100);
+        Assert.assertTrue(searchPage.verifyPriceRange(), "PRICES NOT IN THE EXPECTED RANGE");
+        log.info("Reset range price");
+        searchPage.clickResetPriceFilter();
+        Assert.assertTrue(searchPage.verifyPriceRange(), "PRICES NOT IN THE EXPECTED RANGE");
+        log.info("Increase minimum value");
+        searchPage.changeMinValue(100);
+        Assert.assertTrue(searchPage.verifyPriceRange(), "PRICES NOT IN THE EXPECTED RANGE");
+        log.info("Decrease maximum value");
+        searchPage.changeMaxValue(100);
+        Assert.assertTrue(searchPage.verifyPriceRange(), "PRICES NOT IN THE EXPECTED RANGE");
+    }
+
+    @Test(description = "TC-003 Change order the result of the search by pricing",
+            dataProviderClass = Data.class,
+            dataProvider = "searchOptions")
+    public void testOrderSearchResult(Options options) {
+        log.info("Precondition previous search for the cruises");
+        SearchPage searchPage = getHomePage().setDestination(options.getDestination())
+                .setDuration(options.getDuration())
+                .searchCruises();
+        log.info("Verify sort menu");
+        Assert.assertTrue(searchPage.sortMenuIsDisplayed(), "SORT MENU NOT DISPLAYED");
+        Assert.assertTrue(searchPage.sortPricingIsDisplayed(), "SORT PRICE BUTTON NIT DISPLAYED");
+        log.info("Open sort pricing options");
+        List<String> sortOptions = new ArrayList<>();
+        sortOptions.add("Cheapest to Expensive");
+        sortOptions.add("Expensive to Cheapest");
+        searchPage.clickPricingSort();
+        Assert.assertTrue(searchPage.verifySortPricingOptions(sortOptions), "SORT OPTIONS IS NOT EXPECTED");
+        Assert.assertTrue(searchPage.sortPricingOptionIsSelected(sortOptions.get(0)),
+                "SORT SELECTED OPTION IS NOT THE EXPECTED");
+        log.info("Change sort pricing option");
+        searchPage.selectSortPricingOption(sortOptions.get(1));
+        Assert.assertTrue(searchPage.sortPricingOptionIsSelected(sortOptions.get(1)),
+                "SORT SELECTED OPTION IS NOT THE EXPECTED");
+        Assert.assertTrue(searchPage.verifyOrderByPricing(false), "NOT ORDER AS EXPECTED");
+    }
+
     @Test(description = "TC-004 Verify itinerary detail",
             dataProviderClass = Data.class,
             dataProvider = "searchOptions")
